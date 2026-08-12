@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mehar Lasani - Sanitary Product Price Book</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#182230;font-family:Arial,sans-serif}
+header,footer{background:#0c213b;color:#fff;padding:18px}.top{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{color:#f6c85f;font-size:22px;font-weight:bold}.title{text-align:center}.title h1{margin:0;font-size:25px}.title p{margin:5px 0;color:#d8e2ed}.add{background:transparent;color:white;border:1px solid #5480ad;border-radius:8px;padding:11px 16px;font-weight:bold;cursor:pointer}
+.wrap{max-width:1200px;margin:auto;padding:18px}.search{width:100%;padding:16px;border:1px solid #dbe2e9;border-radius:10px;font-size:16px;margin-bottom:18px}.total,.tablebox{background:white;border:1px solid #e0e6eb;border-radius:11px}.total{padding:17px;margin-bottom:18px}.total strong{display:block;font-size:25px;color:#135bc2;margin:6px 0}
+.tablebox{overflow:auto}table{width:100%;min-width:850px;border-collapse:collapse}th{background:#0c213b;color:white;padding:12px}td{padding:11px;border-bottom:1px solid #e6ebef;text-align:center}td.name{text-align:left}td.urdu{direction:rtl;font-family:"Noto Naskh Arabic","Noto Nastaliq Urdu",Arial,sans-serif}.action button{border:0;background:none;font-size:19px;cursor:pointer}.bottom{display:flex;justify-content:space-between;align-items:center;padding:13px;gap:10px;flex-wrap:wrap}.pages{display:flex;gap:6px}.pages button{padding:8px 13px;border:1px solid #dce2e8;background:white;border-radius:6px;cursor:pointer}.pages .active{background:#1261cf;color:white}.empty{text-align:center;padding:45px;color:#697586}
+footer{display:flex;justify-content:space-between;font-size:13px}.modal{display:none;position:fixed;inset:0;background:#0008;align-items:center;justify-content:center;padding:18px;z-index:5}.modal.show{display:flex}.modalbox{background:white;width:min(680px,100%);border-radius:14px;padding:22px}.modalhead{display:flex;justify-content:space-between}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}.field label{display:block;font-weight:bold;margin-bottom:6px}.field input{width:100%;padding:12px;border:1px solid #ccd5de;border-radius:8px}.urdufield{direction:rtl;text-align:right;font-family:"Noto Naskh Arabic","Noto Nastaliq Urdu",Arial,sans-serif}.hint{font-size:12px;color:#687586;margin-top:5px}.modalactions{text-align:right;margin-top:18px}.save{background:#1261cf;color:white;border:0;border-radius:7px;padding:10px 15px;cursor:pointer}.cancel,.close{border:0;border-radius:7px;padding:10px;margin-right:6px;cursor:pointer}
+@media(max-width:700px){.top{flex-wrap:wrap}.title{order:3;width:100%}.formgrid{grid-template-columns:1fr}}
+</style>
+
+<style id="mobile-table-fix">
+@media (max-width: 700px) {
+  .tablebox { overflow-x: hidden !important; }
+  table { min-width: 0 !important; width: 100% !important; table-layout: fixed !important; }
+  th, td { padding: 8px 4px !important; font-size: 12px !important; word-break: break-word !important; overflow-wrap: anywhere !important; }
+  th { line-height: 1.15 !important; }
+  td.urdu { font-size: 13px !important; line-height: 1.35 !important; }
+  .action button { font-size: 16px !important; padding: 2px !important; }
+  table th:nth-child(1), table td:nth-child(1) { width: 7% !important; }
+  table th:nth-child(2), table td:nth-child(2) { width: 22% !important; }
+  table th:nth-child(3), table td:nth-child(3) { width: 25% !important; }
+  table th:nth-child(4), table td:nth-child(4) { width: 16% !important; }
+  table th:nth-child(5), table td:nth-child(5) { width: 16% !important; }
+  table th:nth-child(6), table td:nth-child(6) { width: 14% !important; }
+  .bottom { font-size: 12px !important; padding: 10px 7px !important; }
+}
+</style>
+
+
+<style id="search-layout-fix">
+.searching .total { display: none !important; }
+.searching .tablebox { margin-top: 0 !important; }
+</style>
+
+</head>
+<body>
+<header><div class="top"><div class="brand">♛ MEHAR LASANI</div><div class="title"><h1>Sanitary Product Price Book</h1><p>English + Urdu • Simple Digital Register</p></div><button class="add" onclick="openModal()">＋ Add Product</button></div></header>
+<main class="wrap">
+<input id="search" class="search" placeholder="🔍 Search product (English or Urdu)..." oninput="first()">
+<div class="total">Total Products<strong id="total">0</strong>Items</div>
+<section class="tablebox"><table><thead><tr><th>#</th><th>English Product Name</th><th>اردو پروڈکٹ نام</th><th>Purchase Price</th><th>Sale Price</th><th>Action</th></tr></thead><tbody id="tbody"></tbody></table>
+<div class="bottom"><span id="count">0 products</span><div id="pages" class="pages"></div><span>Products per page: <select id="per" onchange="first()"><option>15</option><option>25</option><option>50</option></select></span></div></section>
+</main>
+<footer><span>© 2026 Mehar Lasani - Sanitary Product Price Book</span><span>All rights reserved.</span></footer>
+
+<div id="modal" class="modal"><div class="modalbox"><div class="modalhead"><h2 id="mt">Add New Product</h2><button class="close" onclick="closeModal()">✕</button></div>
+<div class="formgrid">
+<div class="field"><label>English Product Name *</label><input id="en" placeholder="e.g. No return valve bilal" oninput="autoUrdu()"><div class="hint">Urdu name will fill automatically as you type.</div></div>
+<div class="field"><label>اردو پروڈکٹ نام</label><input id="ur" class="urdufield" placeholder="نو ریٹرن والو بلال"></div>
+<div class="field"><label>Purchase Price *</label><input id="buy" type="number"></div>
+<div class="field"><label>Sale Price *</label><input id="sell" type="number"></div>
+</div>
+<div class="modalactions"><button class="cancel" onclick="closeModal()">Cancel</button><button class="save" onclick="saveProduct()">💾 Save Product</button></div>
+</div></div>
+
+<script>
+const KEY="mehar_lasani_urdu_v8";
+let products=JSON.parse(localStorage.getItem(KEY)||"[]"),page=1,edit=-1;
+
+const translations = {
+  "red":"ریڈ",
+  "green":"گرین",
+  "blue":"بلیو",
+  "gray":"گرے",
+  "grey":"گرے",
+  "brown":"براؤن",
+  "rose gold":"روز گولڈ",
+  "rose":"روز",
+  "standard":"اسٹینڈرڈ",
+  "premium":"پریمیم",
+  "deluxe":"ڈیلکس",
+  "classic":"کلاسک",
+  "series":"سیریز",
+  "type":"ٹائپ",
+  "number":"نمبر",
+  "size":"سائز",
+  "model":"ماڈل",
+  "pack":"پیک",
+  "box":"باکس",
+  "foot":"فٹ",
+  "old":"اولڈ",
+  "plated":"پلیٹڈ",
+  "heater":"ہیٹر",
+  "tub":"ٹب",
+  "dish":"ڈش",
+  "soap":"صابن",
+  "rack":"ریک",
+  "towel":"تولیہ",
+  "tape":"ٹیپ",
+  "teflon":"ٹیفلون",
+  "faucet":"فاسٹ",
+  "health":"ہیلتھ",
+  "flush":"فلاش",
+  "flexible":"فلیکسیبل",
+  "ppr":"پی پی آر",
+  "pvc":"پی وی سی",
+  "ptmt":"پی ٹی ایم ٹی",
+  "floor":"فلور",
+  "stop":"اسٹاپ",
+  "pillar":"پلر",
+  "bib":"بب",
+  "angle":"اینگل",
+  "rain":"رین",
+  "hand":"ہینڈ",
+  "seat":"سیٹ",
+  "wash":"واش",
+  "godam":"گودام",
+  "goda":"گودا",
+  "jore":"جوری",
+  "bhari":"بھاری",
+  "cock":"کاک",
+  "poush":"پوش",
+  "return":"ریٹرن",
+  "no":"نو",
+  "finish":"فنش",
+  "matte":"میٹ",
+  "golden":"گولڈن",
+  "metal":"میٹل",
+  "ring":"رنگ",
+  "seal":"سیل",
+  "rubber":"ربڑ",
+  "washer":"واشر",
+  "bolt":"بولٹ",
+  "nut":"نٹ",
+  "cap":"کیپ",
+  "adapter":"اڈاپٹر",
+  "union":"یونین",
+  "nipple":"نپل",
+  "bush":"بش",
+  "coupling":"کپلنگ",
+  "joint":"جوائنٹ",
+  "faisal chrome":"فیصل کروم",
+  "chrome plated":"کروم پلیٹڈ",
+  "chrome finish":"کروم فنش",
+  "chrome":"کروم",
+  "head faisal chrome":"ہیڈ فیصل کروم",
+  "head":"ہیڈ","faisal":"فیصل","head faisal":"ہیڈ فیصل",
+  "bilal":"بلال","ali":"علی","ahmed":"احمد","usman":"عثمان","hamza":"حمزہ",
+  "connection":"کنکشن","connections":"کنکشنز",
+  "no return valve":"نو ریٹرن والو","no return valve bilal":"نو ریٹرن والو بلال",
+  "poush cock":"پوش کاک","poush cock bhari":"پوش کاک بھاری",
+  "jore godam":"جوری گودام","jore goda":"جوری گودا","jore goda f.t":"جوری گودا ف.ٹ",
+  "wash basin":"واش بیسن","basin":"بیسن","commode":"کموڈ","wall hung commode":"وال ہنگ کموڈ",
+  "toilet":"ٹوائلٹ","toilet seat":"ٹوائلٹ سیٹ","sink":"سنک","sink mixer":"سنک مکسر",
+  "tap":"ٹیپ","mixer":"مکسر","basin mixer":"بیسن مکسر","shower":"شاور","shower set":"شاور سیٹ",
+  "hand shower":"ہینڈ شاور","rain shower":"رین شاور","angle valve":"اینگل والو",
+  "bib cock":"بب کاک","pillar cock":"پلر کاک","stop cock":"اسٹاپ کاک",
+  "floor drain":"فلور ڈرین","drain":"ڈرین","ptmt tap":"پی ٹی ایم ٹی ٹیپ",
+  "pipe":"پائپ","pvc pipe":"پی وی سی پائپ","ppr pipe":"پی پی آر پائپ",
+  "flexible pipe":"فلیکسیبل پائپ","flush tank":"فلاش ٹینک","flush valve":"فلاش والو",
+  "health faucet":"ہیلتھ فاسٹ","teflon tape":"ٹیفلون ٹیپ","pvc glue":"پی وی سی گلو",
+  "glue":"گلو","connector":"کنیکٹر","elbow":"ایلبو","tee":"ٹی","socket":"ساکٹ",
+  "valve":"والو","bracket":"بریکٹ","mirror":"آئینہ","towel rack":"تولیہ ریک",
+  "soap dish":"صابن ڈش","bath tub":"باتھ ٹب","water heater":"واٹر ہیٹر","geyser":"گیزر",
+  "white":"وائٹ","black":"بلیک","gold":"گولڈ","silver":"سلور","brass":"براس",
+  "plastic":"پلاسٹک","steel":"اسٹیل","bath":"باتھ","room":"روم","water":"واٹر",
+  "tank":"ٹینک","wall":"وال","hung":"ہنگ","product":"پروڈکٹ","new":"نیو",
+  "heavy":"ہیوی","light":"لائٹ","small":"چھوٹا","large":"بڑا","big":"بڑا",
+  "set":"سیٹ","piece":"پیس","pcs":"پی سیز","inch":"انچ","feet":"فٹ","ft":"فٹ",
+  "left":"لیفٹ","right":"رائٹ","upper":"اپر","lower":"لوئر","long":"لمبا","short":"چھوٹا",
+  "branded":"برانڈڈ","local":"لوکل","original":"اوریجنل"
+};
+
+function englishToUrdu(text){
+  const raw=text.trim();
+  if(!raw) return "";
+  const key=raw.toLowerCase().replace(/\s+/g," ").trim();
+  if(translations[key]) return translations[key];
+
+  let result=raw;
+  Object.keys(translations).sort((a,b)=>b.length-a.length).forEach(k=>{
+    const escaped=k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    result=result.replace(new RegExp("\\b"+escaped+"\\b","ig"),translations[k]);
+  });
+
+  const map={a:"ا",b:"ب",c:"ک",d:"ڈ",e:"ی",f:"ف",g:"گ",h:"ہ",i:"ی",j:"ج",k:"ک",l:"ل",m:"م",n:"ن",o:"و",p:"پ",q:"ق",r:"ر",s:"س",t:"ٹ",u:"و",v:"و",w:"و",x:"کس",y:"ی",z:"ز"};
+  function word(w){
+    const low=w.toLowerCase();
+    if(translations[low]) return translations[low];
+    let x=low;
+    [[/tion/g,"شن"],[/sion/g,"ژن"],[/ture/g,"چر"],[/ph/g,"ف"],[/sh/g,"ش"],[/ch/g,"چ"],[/kh/g,"خ"],[/gh/g,"غ"],[/th/g,"تھ"],[/dh/g,"دھ"],[/oo/g,"و"],[/ee/g,"ی"],[/ea/g,"ی"],[/aa/g,"ا"],[/ai/g,"ے"],[/ei/g,"ے"],[/ou/g,"و"],[/ow/g,"او"],[/ck/g,"ک"]].forEach(([a,b])=>x=x.replace(a,b));
+    return x.split("").map(c=>map[c]||c).join("");
+  }
+  return result.split(/([A-Za-z]+|\s+|[^A-Za-z\s]+)/).map(p=>{
+    if(/^\s+$/.test(p)||!/[A-Za-z]/.test(p)||/[ء-ي]/.test(p)) return p;
+    return word(p);
+  }).join("");
+}
+
+function autoUrdu(){
+  const enEl=document.getElementById("en");
+  const urEl=document.getElementById("ur");
+  if(enEl && urEl) urEl.value=englishToUrdu(enEl.value);
+}
+
+function money(x){return Number(x).toLocaleString("en-PK",{minimumFractionDigits:2})}
+function list(){let q=search.value.toLowerCase().trim();return products.filter(p=>p.en.toLowerCase().includes(q)||p.ur.includes(q))}
+function render(){let a=list(),n=+per.value,totalPages=Math.ceil(a.length/n);if(page>totalPages&&totalPages)page=totalPages;let start=(page-1)*n,show=a.slice(start,start+n);
+tbody.innerHTML=show.length?show.map((p,i)=>'<tr><td>'+(start+i+1)+'</td><td class="name">'+esc(p.en)+'</td><td class="urdu">'+esc(p.ur)+'</td><td>'+money(p.buy)+'</td><td>'+money(p.sell)+'</td><td class="action"><button onclick="editProduct('+products.indexOf(p)+')">✎</button><button onclick="del('+products.indexOf(p)+')">🗑</button></td></tr>').join(""):'<tr><td colspan="6" class="empty">No products added yet. Click ＋ Add Product above.</td></tr>';
+total.textContent=products.length;count.textContent=a.length?(start+1)+" to "+Math.min(start+n,a.length)+" of "+a.length+" products":"0 products";pages.innerHTML="";if(totalPages>1){for(let i=1;i<=totalPages;i++){let b=document.createElement("button");b.textContent=i;b.className=i==page?"active":"";b.onclick=()=>{page=i;render()};pages.appendChild(b)}}}
+function first(){
+  page=1;
+  const q=search.value.trim();
+  document.body.classList.toggle("searching", q.length>0);
+  render();
+}function esc(x){return String(x).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function openModal(){edit=-1;mt.textContent="Add New Product";["en","ur","buy","sell"].forEach(x=>document.getElementById(x).value="");modal.classList.add("show")}function closeModal(){modal.classList.remove("show")}
+function editProduct(i){let p=products[i];edit=i;mt.textContent="Edit Product";en.value=p.en;ur.value=p.ur;buy.value=p.buy;sell.value=p.sell;modal.classList.add("show")}
+function saveProduct(){let e=en.value.trim(),u=ur.value.trim(),b=buy.value,s=sell.value;if(!e&&!u&&b===""&&s==="")return;let p={en:e,ur:u,buy:b===""?null:+b,sell:s===""?null:+s};if(edit<0)products.push(p);else products[edit]=p;localStorage.setItem(KEY,JSON.stringify(products));page=Math.ceil(products.length/+per.value);render();closeModal()}
+function del(i){if(confirm("Delete this product?")){products.splice(i,1);localStorage.setItem(KEY,JSON.stringify(products));render()}}
+document.body.classList.remove("searching");
+render();
+</script></body></html>
